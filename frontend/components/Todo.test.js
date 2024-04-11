@@ -7,7 +7,9 @@ import server from '../../backend/mock-server'
 import { resetTodos } from '../../backend/helpers'
 
 describe('Todos Component', () => {
+
   let user, laundry, dishes, groceries, del, input
+  
 
   afterEach(() => { server.resetHandlers() })
   beforeAll(() => { server.listen() })
@@ -34,16 +36,30 @@ describe('Todos Component', () => {
 
 
   test('can do and undo todos', async () => {
-    console.log('second test begins')
-    await user.click(laundry)
-    expect(await screen.findByText('laundry ✔️')).toBeVisible()
-    await user.click(laundry)
-    expect(await screen.findByText('laundry')).toBeVisible()
-    expect(laundry).toHaveTextContent('laundry')
+    const tasks = ['laundry', 'dishes', 'groceries']
+    for (const task of tasks) {
+      let element = screen.getByText(task)
+      await user.click(element)
+      expect(await screen.findByText(`${task} ✔️`)).toBeVisible()
+      await user.click(element)
+      expect(await screen.findByText(task)).toBeVisible()
+      expect(element).toHaveTextContent(task)
+    }
   })
 
   test('can delete todos', async () => {
+    console.log('third test begins...')
 
+    const tasks = ['laundry', 'dishes', 'groceries']
+
+    for (const task of tasks) {
+      console.log('initiating ', task, ' deletion')
+      del = screen.getByText(task).nextSibling
+      await user.click(del)
+      await waitFor(() => {
+        expect(screen.queryByText('laundry')).toBeNull()
+      })
+    }
   })
 
   test('can create a new todo, complete it and delete it', async () => {
