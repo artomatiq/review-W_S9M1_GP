@@ -18,8 +18,12 @@ export default function Todo() {
     get()
   }, [])
 
-  const toggle = id => axios.patch(`${baseURL}/${id}`)
-    .then(({ data }) => setTodos(data))
+  const toggle = id => {
+    console.log('click initiated');
+    axios.patch(`${baseURL}/${id}`)
+      .then(({ data }) => setTodos(data))
+      console.log('click resolved', id);
+  }
 
   const del = id => axios.delete(`${baseURL}/${id}`)
     .then(({ data }) => setTodos(data))
