@@ -9,7 +9,6 @@ import { resetTodos } from '../../backend/helpers'
 describe('Todos Component', () => {
 
   let user, laundry, dishes, groceries, del, input
-  
 
   afterEach(() => { server.resetHandlers() })
   beforeAll(() => { server.listen() })
@@ -34,7 +33,6 @@ describe('Todos Component', () => {
     expect(groceries).toBeVisible()
   })
 
-
   test('can do and undo todos', async () => {
     const tasks = ['laundry', 'dishes', 'groceries']
     for (const task of tasks) {
@@ -48,10 +46,7 @@ describe('Todos Component', () => {
   })
 
   test('can delete todos', async () => {
-    console.log('third test begins...')
-
     const tasks = ['laundry', 'dishes', 'groceries']
-
     for (const task of tasks) {
       console.log('initiating ', task, ' deletion')
       del = screen.getByText(task).nextSibling
@@ -63,6 +58,21 @@ describe('Todos Component', () => {
   })
 
   test('can create a new todo, complete it and delete it', async () => {
+    const newTask = 'test it'
+    await user.type(input, newTask)
+    expect(await input.value).toBe(newTask)
+    await user.keyboard('[ENTER]')
+    let newElement = await screen.findByText(newTask)
+    expect(newElement).toBeInTheDocument()
 
+    await user.click(newElement)
+    await waitFor(() => {
+      expect(newElement).toHaveTextContent(`${newTask} ✔️`)
+    })
+
+    await user.click(newElement.nextSibling)
+    await waitFor(() => {
+      expect(screen.queryByText(`${newTask} ✔️`)).toBeNull()
+    })
   })
 })
